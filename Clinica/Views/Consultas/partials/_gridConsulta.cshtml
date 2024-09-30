@@ -1,0 +1,47 @@
+﻿@model List<Clinica.Models.ConsultaModel>
+
+<h2>Minhas Consultas</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Médico</th>
+            <th>Paciente</th>
+            <th>E-mail</th>
+            <th>Confirmada</th>
+            
+        </tr>
+    </thead>
+    <tbody id="consultasTable">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var consulta in Model)
+            {
+                <tr>
+                    <td>@consulta.DataHora.ToString("g")</td>
+                    <td>@consulta.Medico?.Nome</td>
+                    <td>@consulta.Paciente?.Nome</td>
+                    <td>@consulta.Paciente?.Email</td>
+                    <td>@(consulta.Confirmada ? "Sim" : "Não")</td>
+                    <td>
+                        <a onclick="EditConsulta(@consulta.Id)"
+                            class="btn btn-sm btn-outline-warning">
+                            <i class="fa-solid fa-pen-to-square"></i> Editar
+                        </a>
+                        <a onclick="DeletConsulta(@consulta.Id)" class="btn btn-sm btn-outline-danger">
+                            <i class="fa-solid fa-trash"></i> Excluir
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">Nenhuma consulta encontrada.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" onclick="CreateConsultaModal()">Agendar Nova Consulta</a>
