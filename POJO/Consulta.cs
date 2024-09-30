@@ -8,8 +8,9 @@
         public DateTime DataHora { get; set; }
         public string Email {  get; set; }
         public bool Confirmada { get; set; } = true;
-       //public bool Notificada { get; set; } = false;
         public string UsuarioId { get; set; }
+        public string Senha { get; set; }
+        public string ConfirmarSenha { get; set; }
 
     }
 }

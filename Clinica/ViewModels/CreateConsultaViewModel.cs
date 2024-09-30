@@ -1,6 +1,7 @@
 ﻿using POJO;
+using Clinica.Models;
 
-namespace Clinica.Models
+namespace Clinica.ViewModels
 {
     public class CreateConsultaViewModel
     {

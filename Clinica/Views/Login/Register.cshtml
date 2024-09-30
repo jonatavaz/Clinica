@@ -1,0 +1,24 @@
+﻿@model Clinica.ViewModels.RegisterViewModel
+
+<form asp-action="CreateAccount" method="post">
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="Senha"></label>
+        <input asp-for="Senha" type="password" />
+        <span asp-validation-for="Senha" class="text-danger"></span>
+    </div>
+    <div>
+        <label asp-for="ConfirmarSenha"></label>
+        <input asp-for="ConfirmarSenha" type="password" />
+        <span asp-validation-for="ConfirmarSenha" class="text-danger"></span>
+    </div>
+    <button type="submit">Cadastrar</button>
+</form>
+
+@section Scripts {
+    <script src="~/js/Login/login.js" asp-append-version="true"></script>
+}

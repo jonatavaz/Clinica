@@ -7,6 +7,7 @@ namespace Clinica.Controllers
 {
     public class ConsultasController : Controller
     {
+        
         private static List<ConsultaModel> _consultas = new List<ConsultaModel>();
         private static List<Medico> _medicos = new List<Medico>
         {
@@ -15,8 +16,8 @@ namespace Clinica.Controllers
         };
         private static List<Paciente> _pacientes = new List<Paciente>
         {
-            new Paciente { Id = 1, Nome = "Maicon", Email = "Maicon@exemplo.com" },
-            new Paciente { Id = 2, Nome = "Ana", Email = "ana@example.com" }
+            new Paciente { Id = 1, Nome = "João", Email = "joao@example.com", Senha = "1234" },
+            new Paciente { Id = 2, Nome = "Ana", Email = "ana@example.com", Senha = "1234" }
         };
 
         public IActionResult Index()
@@ -24,27 +25,11 @@ namespace Clinica.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult Authenticate(LoginViewModel model)
-        {
-            
-            if (ModelState.IsValid)
-            {
-                if (model.UsuarioId == "admin" && model.Senha == "senha") 
-                {
-                    // Armazenar o ID do usuário na sessão
-                    HttpContext.Session.SetString("UsuarioId", model.UsuarioId);
-                    return RedirectToAction("Index", "Consultas");
-                }
-                ModelState.AddModelError("", "Usuário ou senha inválidos.");
-            }
-            return View("Index", model);
-        }
-
         [HttpGet]
         public IActionResult CreateConsultaModal(int id = 0)
         {
             var viewModel = new CreateConsultaViewModel();
+            //edicao
             if (id > 0)
             {
                 var consulta = _consultas.FirstOrDefault(c => c.Id == id);
@@ -58,6 +43,7 @@ namespace Clinica.Controllers
                     };
                 }
             }
+            //novo
             else
             {
                 viewModel = new CreateConsultaViewModel
@@ -70,26 +56,36 @@ namespace Clinica.Controllers
             
             return PartialView("~/Views/Consultas/partials/_modalCreateConsultas.cshtml", viewModel);
         }
-
+    
         [HttpGet]
-        public IActionResult Edit(int id)
+        public IActionResult ListConsulta()
         {
-            var consulta = _consultas.FirstOrDefault(c => c.Id == id);
-            if (consulta != null)
-            {
-                var viewModel = new CreateConsultaViewModel
-                {
-                    Consulta = consulta,
-                    Medicos = _medicos,
-                    Pacientes = _pacientes
-                };
+            var usuarioId = HttpContext.Session.GetString("UsuarioId");
 
-                return PartialView("~/Views/Consultas/partials/_editConsulta.cshtml", viewModel);
+            if (string.IsNullOrEmpty(usuarioId))
+            {
+                return RedirectToAction("Login"); // Redirecionaaaaaaaaaaaaaaaaaaaa
             }
-            return RedirectToAction(nameof(Index));
+
+            var consultasDoUsuario = _consultas
+                .Where(c => c.UsuarioId == usuarioId)
+                .Select(c => new ConsultaModel
+                {
+                    Id = c.Id,
+                    DataHora = c.DataHora,
+                    MedicoId = c.MedicoId,
+                    PacienteId = c.PacienteId,
+                    Confirmada = c.Confirmada,
+                    Email = c.Email,
+                    Medico = _medicos.FirstOrDefault(m => m.Id == c.MedicoId), 
+                    Paciente = _pacientes.FirstOrDefault(p => p.Id == c.PacienteId)
+                })
+                .ToList();
+
+            return PartialView("~/Views/Consultas/partials/_gridConsulta.cshtml", consultasDoUsuario);
         }
 
-        
+
         [HttpPost]
         public JsonResult CreateConsulta(int PacienteId, int MedicoId, string Email, DateTime DataHora)
         {
@@ -125,30 +121,7 @@ namespace Clinica.Controllers
             else            
                 return Json(new { status = false });
         }
-
-        [HttpGet]
-        public IActionResult ListConsulta(string usuarioId)
-       {
-            //List<ConsultaModel> consultasDoUsuario = new List<ConsultaModel>();
-
-            var consultasDoUsuario = _consultas
-                .Where(c => c.UsuarioId == usuarioId)
-                .Select(c => new ConsultaModel
-                {
-                    Id = c.Id,
-                    DataHora = c.DataHora,
-                    MedicoId = c.MedicoId,
-                    PacienteId = c.PacienteId,
-                    Confirmada = c.Confirmada,
-                    Email = c.Email,
-                    Medico = _medicos.FirstOrDefault(m => m.Id == c.MedicoId), 
-                    Paciente = _pacientes.FirstOrDefault(p => p.Id == c.PacienteId)
-                })
-                .ToList();
-
-            return PartialView("~/Views/Consultas/partials/_gridConsulta.cshtml", consultasDoUsuario);
-        }
-
+        
         [HttpPost]
         public JsonResult UpdateConsulta(int id, int PacienteId, int MedicoId, string Email, DateTime DataHora)
         {
@@ -165,11 +138,9 @@ namespace Clinica.Controllers
 
             return Json(new { status = false });
         }
-
-
-        
+                
         [HttpPost]
-        public JsonResult Delete(int id)
+        public JsonResult DeletConsulta(int id)
         {
             var consulta = _consultas.FirstOrDefault(c => c.Id == id);
             if (consulta != null)
@@ -179,5 +150,6 @@ namespace Clinica.Controllers
             }
             return Json(new { status = false });
         }
+
     }
 }
