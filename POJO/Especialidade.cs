@@ -8,7 +8,7 @@ namespace POJO
 {
     public class Especialidade
     {
-        public int ID { get; set; }
+        public int EspecialidadeID { get; set; }
         public string NomeEspecialidade { get; set; }
     }
 }

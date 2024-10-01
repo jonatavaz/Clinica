@@ -4,7 +4,7 @@ namespace POJO
 {
     public class Medico : Especialidade
     {
-        public int Id { get; set; }
+        public int MedicoId { get; set; }
         public required string Nome { get; set; }
     }
 }

@@ -2,9 +2,7 @@
     ListConsulta();
 });
 
-
 function CreateConsultaModal() {
-
     $.ajax({
         type: "GET",
         url: '/Consultas/CreateConsultaModal',
@@ -24,9 +22,7 @@ function EditConsulta(consultaId) {
     $.ajax({
         type: "GET",
         url: `/Consultas/CreateConsultaModal`,
-        data: {
-            "id": consultaId
-        },
+        data: { "id": consultaId },
         dataType: "html",
         success: function (response) {
             $('#createConsulta').html(response).ready(function () {
@@ -54,19 +50,16 @@ function ListConsulta() {
 }
 
 function SaveConsulta() {
-    let PacienteId = document.getElementById('PacienteId').value;
-    let MedicoId = document.getElementById('MedicoId').value;
-    let Email = document.getElementById('Email').value;
-    let DataHora = document.getElementById('DataHora').value;
-    let consultaId = document.getElementById('ConsultaId') ? document.getElementById('ConsultaId').value : 0;
+    let PacienteId = $('#PacienteId').val();
+    let MedicoId = $('#MedicoId').val();
+    let Email = $('#Email').val();
+    let DataHora = $('#DataHora').val();
+    let consultaId = $('#ConsultaId').val() || 0;
 
-    if (PacienteId != 0) {
+    if (PacienteId) {
         if (confirm('Deseja salvar a consulta?')) {
-            let url =
-                consultaId > 0 ? '/Consultas/UpdateConsulta' : '/Consultas/CreateConsulta';
-
-            let data =
-                consultaId > 0 ? { id: consultaId, PacienteId, MedicoId, Email, DataHora } : { PacienteId, MedicoId, Email, DataHora };
+            let url = consultaId > 0 ? '/Consultas/UpdateConsulta' : '/Consultas/CreateConsulta';
+            let data = consultaId > 0 ? { id: consultaId, PacienteId, MedicoId, Email, DataHora } : { PacienteId, MedicoId, Email, DataHora };
 
             $.ajax({
                 type: "POST",
@@ -88,7 +81,7 @@ function SaveConsulta() {
             });
         }
     } else {
-        alert("Insira os dados abaixo");
+        alert("Por favor, preencha todos os campos obrigatórios.");
     }
 }
 
@@ -102,7 +95,7 @@ function DeletConsulta(consultaId) {
             success: function (response) {
                 if (response.status) {
                     alert('Consulta excluída com sucesso.');
-                    ListConsulta(); 
+                    ListConsulta();
                 } else {
                     alert('Erro ao excluir a consulta.');
                 }
