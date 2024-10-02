@@ -22,13 +22,13 @@
                     <td>@consulta.Medico?.Nome</td>
                     <td>@consulta.Paciente?.Nome</td>
                     <td>@consulta.Paciente?.Email</td>
-                    <td>@(consulta.Confirmada ? "Sim" : "Não")</td>
+                    <td>@(consulta.ConsultaConfirmada ? "Sim" : "Não")</td>
                     <td>
-                        <a onclick="EditConsulta(@consulta.Id)"
+                        <a onclick="EditConsulta(@consulta.ConsultaId)"
                             class="btn btn-sm btn-outline-warning">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
                         </a>
-                        <a onclick="DeletConsulta(@consulta.Id)" class="btn btn-sm btn-outline-danger">
+                        <a onclick="DeletConsulta(@consulta.ConsultaId)" class="btn btn-sm btn-outline-danger">
                             <i class="fa-solid fa-trash"></i> Excluir
                         </a>
                     </td>

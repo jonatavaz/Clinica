@@ -4,7 +4,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                @if (Model.Consulta != null && Model.Consulta.Id > 0)
+                @if (Model.Consulta != null && Model.Consulta.ConsultaId > 0)
                 {
                     <h1 class="modal-title fs-5" id="modalCreateConsultaLabel">Editar Consulta</h1>
                 }
@@ -17,7 +17,7 @@
             <div class="modal-body">
                 
                 <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId" />
-                <input type="hidden" id="ConsultaId" value="@Model.Consulta?.Id" />
+                <input type="hidden" id="ConsultaId" value="@Model.Consulta?.ConsultaId" />
                 <div class="form-group">
                     <label for="PacienteId">Paciente</label>
                     <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "Nome"))" class="form-control" id="PacienteId" required>

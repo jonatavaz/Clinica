@@ -9,7 +9,7 @@ namespace DAL
 {
     public class PacienteDAL
     {
-        public List<Paciente> GetPacientes()
+        public List<Paciente> GetAllPacientes()
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
             string sql = "SELECT * FROM Paciente";
@@ -58,12 +58,13 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "INSERT INTO Paciente (Nome, Email, Senha) VALUES (@Nome, @Email, @Senha)";
+            string sql = "INSERT INTO Paciente (Nome, Email, Senha, DataNascimento) VALUES (@Nome, @Email, @Senha, @DataNascimento)";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@Nome", paciente.Nome);
             parameters.Add("@Email", paciente.Email);
             parameters.Add("@Senha", paciente.Senha);
+            parameters.Add("@DataNascimento", paciente.DataNascimento);
 
             try
             {
@@ -85,12 +86,14 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "UPDATE Paciente SET Nome = @Nome, Email = @Email, Senha = @Senha WHERE PacienteId = @PacienteId";
+            string sql = "UPDATE Paciente SET Nome = @Nome, Email = @Email, Senha = @Senha, DataNascimento = @DataNascimento WHERE PacienteId = @PacienteId";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@Nome", paciente.Nome);
             parameters.Add("@Email", paciente.Email);
             parameters.Add("@Senha", paciente.Senha);
+            parameters.Add("@DataNascimento", paciente.DataNascimento);
+
             try
             {
                 var result = conexao.Query(sql, parameters).ToList();

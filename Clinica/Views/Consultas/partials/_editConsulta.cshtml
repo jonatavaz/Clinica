@@ -1,7 +1,7 @@
 ﻿@model Clinica.ViewModels.CreateConsultaViewModel
 
 <form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Consulta.Id" />
+    <input type="hidden" asp-for="Consulta.ConsultaId" />
     <div>
         <label asp-for="Consulta.PacienteId">Paciente</label>
         <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "Nome"))"></select>

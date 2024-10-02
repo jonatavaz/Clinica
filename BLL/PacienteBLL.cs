@@ -1,39 +1,38 @@
 ﻿using DAL;
 using POJO;
-using Dapper;
-using System.Collections.Generic;
 
 namespace BLL
 {
     public class PacienteBLL
     {
         private  PacienteDAL dao;
-
         public PacienteBLL()
         {
             dao = new PacienteDAL();
         }
-
-        public List<Paciente> GetPacientes()
+        public List<Paciente> GetAllPacientes()
         {
-            return dao.GetPacientes();
+            return dao.GetAllPacientes();
         }
+        public Paciente GetPacienteById(int pacienteId)
+        {
+            if (pacienteId <= 0)
+                throw new ArgumentException("O ID do paciente deve ser maior que zero.");
 
-        public void AddPaciente(Paciente paciente)
+            return dao.GetPacienteById(pacienteId);
+        }
+        public bool AddPaciente(Paciente paciente)
         {
 
-            dao.AddPaciente(paciente);
+             return dao.AddPaciente(paciente);
         }
-
         public void UpdatePaciente(Paciente paciente)
         {
 
             dao.UpdatePaciente(paciente);
         }
-
         public void DeletePaciente(int id)
         {
-
             dao.DeletePaciente(id);
         }
     }

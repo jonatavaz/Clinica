@@ -8,7 +8,7 @@ namespace POJO
 {
     public class Pessoa
     {
-        public string PessoaId { get; set; }
+        public int PessoaId { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }

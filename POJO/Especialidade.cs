@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace POJO
 {
-    public class Especialidade
+    public class Especialidade : Medico
     {
-        public int EspecialidadeID { get; set; }
+        public int EspecialidadeId { get; set; }
         public string NomeEspecialidade { get; set; }
+
     }
 }

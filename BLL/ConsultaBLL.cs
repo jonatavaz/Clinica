@@ -1,6 +1,6 @@
 ﻿using DAL;
 using POJO;
-using System.Collections.Generic;
+
 
 namespace BLL
 {
@@ -13,19 +13,19 @@ namespace BLL
             dao = new ConsultaDAL();
         }
 
-        public List<Consulta> GetConsultas()
+        public List<Consulta> GetAllConsultas()
         {
             return dao.GetConsultas();
         }
 
-        public List<Consulta> GetConsultasPorUsuario(string usuarioId)
+        public List<Consulta> GetConsultasPorUsuario(string pacienteId)
         {
-            return dao.GetConsultasPorUsuario(usuarioId);
+            return dao.GetConsultasPorUsuario(pacienteId);
         }
 
-        public Consulta GetConsultaById(int id)
+        public Consulta GetConsultaById(int ConsultaId)
         {
-            return dao.GetConsultaById(id);
+            return dao.GetConsultaById(ConsultaId);
         }
 
         public bool CreateConsulta(Consulta consulta)
@@ -33,14 +33,14 @@ namespace BLL
             return dao.AddConsulta(consulta);
         }
 
-        public void UpdateConsulta(Consulta consulta)
+        public bool UpdateConsulta(Consulta consulta)
         {
-            dao.UpdateConsulta(consulta);
+           return dao.UpdateConsulta(consulta);
         }
 
-        public void DeleteConsulta(int id)
+        public bool DeleteConsulta(int ConsultaId)
         {
-            dao.DeleteConsulta(id);
+            return dao.DeleteConsulta(ConsultaId);
         }
     }
 }

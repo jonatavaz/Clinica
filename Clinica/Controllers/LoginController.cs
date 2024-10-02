@@ -1,54 +1,62 @@
-﻿using Clinica.ViewModels;
+﻿using BLL;
+using Clinica.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using POJO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Clinica.Controllers
 {
     public class LoginController : Controller
     {
-        private static List<Paciente> _usuarios = new List<Paciente>();
+        private readonly MedicoBLL _medicoBLL;
+        private readonly ConsultaBLL _consultaBLL;
+        private readonly PacienteBLL _pacienteBLL;
+        private readonly LoginBLL _loginBLL;
+
+        public LoginController()
+        {
+            _medicoBLL = new MedicoBLL();
+            _consultaBLL = new ConsultaBLL();
+            _pacienteBLL = new PacienteBLL();
+            _loginBLL = new LoginBLL();
+        }
+
         public IActionResult Index()
         {
             return RedirectToAction("Login");
         }
+
         public IActionResult Login()
         {
             return View(new LoginViewModel());
         }
+
         public IActionResult Register()
         {
             return View(new RegisterViewModel());
         }
+
         [HttpPost]
         public IActionResult Authenticate(LoginViewModel model)
         {
-            if (model is not null)
+            if (model == null)
             {
-                Console.WriteLine($"Tentando logar: {model.Email}");
-
-                var usuario = _usuarios.FirstOrDefault(u => u.Email == model.Email);
-
-                if (usuario != null)
-                {
-                    Console.WriteLine($"Usuário encontrado: {usuario.Email}");
-                    if (usuario.Senha == model.Senha)
-                    {
-                        HttpContext.Session.SetString("UsuarioId", usuario.Email);
-                        return Json(new { success = true });
-                    }
-                    else
-                    {
-                        Console.WriteLine("Senha incorreta.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Usuário não encontrado.");
-                }
+                return Json(new { success = false });
             }
-            else
+
+            var login = new Login
             {
-                Console.WriteLine("Modelo inválido.");
+                Email = model.Email,
+                Senha = model.Senha 
+            };
+
+            var usuarioAutenticado = _loginBLL.Authenticate(login);
+
+            if (usuarioAutenticado != null)
+            {
+                HttpContext.Session.SetString("UsuarioId", usuarioAutenticado.LoginId.ToString());
+                return Json(new { success = true });
             }
 
             return Json(new { success = false, message = "E-mail ou senha inválidos." });
@@ -56,37 +64,31 @@ namespace Clinica.Controllers
 
         [HttpPost]
         public IActionResult CreateAccount(RegisterViewModel model)
-       {            
-            if (model is not null)
+        {
+            if (model == null)
             {
-                if (string.IsNullOrEmpty(model.Senha))
-                    return Json(new { success = false, msg = "Verifique a senha" });
+                return Json(new { success = false, message = "Modelo inválido." });
+            }
 
-                if (_usuarios.Any(u => u.Email == model.Email))
-                {
-                    ModelState.AddModelError("", "E-mail já cadastrado.");
-                    return View(model);
-                }
+            if (string.IsNullOrEmpty(model.Senha))
+                return Json(new { success = false, message = "Verifique a senha." });
 
-                var novoUsuario = new Paciente
-                {
-                    Id = _usuarios.Count > 0 ? _usuarios.Max(u => u.Id) + 1 : 1,
-                    Nome = model.Email,
-                    Email = model.Email,
-                    Senha = model.Senha
-                };
+            var novoLogin = new Login
+            {
+                Nome = model.Nome,
+                Email = model.Email,
+                Senha = model.Senha,
+                DataNascimento = model.DataNascimento
+            };
 
-                _usuarios.Add(novoUsuario);
-                Console.WriteLine($"Usuário registrado: {novoUsuario.Email}"); // Verifica logggggggggggggggggggggggggggg
+            var resultado = _loginBLL.AddLogin(novoLogin);
 
-                
+            if (resultado)
+            {
                 return RedirectToAction("Login");
             }
 
-            
-            return View(model);
+            return Json(new { success = false, message = "Erro ao criar conta." });
         }
-
-
     }
 }

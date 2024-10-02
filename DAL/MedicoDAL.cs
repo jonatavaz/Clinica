@@ -11,10 +11,10 @@ namespace DAL
 {
     public class MedicoDAL
     {
-        public List<Medico> GetMedicos()
+        public List<Medico> GetAllMedicos()
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
-            string sql = @$"select * from Medico where nome like @Nome";
+            string sql = @$"select * from Medico";
 
             try
             {
@@ -39,13 +39,13 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = @"SELECT * FROM Paciente WHERE PacienteId = @PacienteId";
+            string sql = @"SELECT * FROM Medico WHERE MedicoId = @MedicoId";
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("@PacienteId", PacienteId);
+            parameters.Add("@MedicoId", MedicoId);
             try
             {
-                var result = conexao.QueryFirstOrDefault<Paciente>(sql, parameters);
+                var result = conexao.QueryFirstOrDefault<Medico>(sql, parameters);
                 return result;
             }
             catch (Exception ex)
@@ -63,15 +63,19 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "INSERT INTO Paciente (Nome, Nome) VALUES (@Nome, @Email, @Senha)";
+            string sql = @"INSERT INTO Medico (Nome, Email, Senha, DataNascimento, NomeEspecialidade) 
+                VALUES (@Nome, @Email, @Senha, @DataNascimento, @NomeEspecialidade)";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@Nome", medico.Nome);
-            p
+            parameters.Add("@Email", medico.Email);
+            parameters.Add("@Senha", medico.Senha);
+            parameters.Add("@DataNascimento", medico.DataNascimento);
+            parameters.Add("@Especialidade", medico.NomeEspecialidade);
 
             try
             {
-                var result = conexao.Query<Paciente>(sql, parameters).ToList();
+                var result = conexao.Query<Medico>(sql, parameters).ToList();
                 return true;
             }
             catch (Exception ex)
@@ -89,12 +93,14 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "UPDATE Paciente SET Nome = @Nome, Email = @Email, Senha = @Senha WHERE PacienteId = @PacienteId";
+            string sql = "UPDATE Medico SET Nome = @Nome, Email = @Email, Senha = @Senha, DataNascimento = @DataNascimento, NomeEspecialidade = @NomeEspecialidade WHERE MedicoId = @MedicoId";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@Nome", medico.Nome);
             parameters.Add("@Email", medico.Email);
             parameters.Add("@Senha", medico.Senha);
+            parameters.Add("@DataNascimento", medico.DataNascimento);
+            parameters.Add("@NomeEspecialidade", medico.NomeEspecialidade);
             try
             {
                 var result = conexao.Query(sql, parameters).ToList();
@@ -111,13 +117,13 @@ namespace DAL
 
         }
 
-        public bool DeleteMedico(int PacienteId)
+        public bool DeleteMedico(int MedicoId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
-            string sql = "DELETE FROM Paciente WHERE PacienteId = @PacienteId";
+            string sql = "DELETE FROM Medico WHERE MedicoId = @MedicoId";
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("@PacienteId", PacienteId);
+            parameters.Add("@MedicoId", MedicoId);
 
             try
             {

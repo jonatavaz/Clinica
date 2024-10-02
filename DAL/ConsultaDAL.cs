@@ -31,14 +31,14 @@ namespace DAL
 
         }
 
-        public List<Consulta> GetConsultasPorUsuario(string usuarioId)
+        public List<Consulta> GetConsultasPorUsuario(string ConsultaId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "SELECT * FROM Consulta WHERE UsuarioId = @UsuarioId";
+            string sql = "SELECT * FROM Consulta WHERE ConsultaId = @ConsultaId";
 
             var parameters = new DynamicParameters();
-            parameters.Add("@UsuarioId", usuarioId);
+            parameters.Add("@ConsultaId", ConsultaId);
 
             try
             {
@@ -84,14 +84,14 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = @"INSERT INTO Consulta (MedicoId, PacienteId, DataHora, EmailPaciente) 
-                               VALUES (@MedicoId, @PacienteId, @DataHora, @EmailPaciente)";
+            string sql = @"INSERT INTO Consulta (MedicoId, PacienteId, DataHora, ConsultaConfirmada) 
+                               VALUES (@MedicoId, @PacienteId, @DataHora, @ConsultaConfirmada)";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@MedicoId", consulta.MedicoId);
             parameters.Add("@PacienteId", consulta.PacienteId);
             parameters.Add("@DataHora", consulta.DataHora);
-            parameters.Add("@Email", consulta.EmailPaciente);
+            parameters.Add("@ConsultaConfirmada", consulta.ConsultaConfirmada);
 
             try
             {
@@ -109,21 +109,20 @@ namespace DAL
 
         }
 
-
         public bool UpdateConsulta(Consulta consulta)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
             string sql = @"UPDATE Consulta 
                                SET MedicoId = @MedicoId, PacienteId = @PacienteId, DataHora = @DataHora, 
-                                   EmailPaciente = @Email 
-                               WHERE ConsultaId = @Id";
+                                   ConsultaConfirmada = @ConsultaConfirmada 
+                               WHERE ConsultaId = @ConsultaId";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@MedicoId", consulta.MedicoId);
             parameters.Add("@PacienteId", consulta.PacienteId);
             parameters.Add("@DataHora", consulta.DataHora);
-            parameters.Add("@Email", consulta.EmailPaciente);
+            parameters.Add("@ConsultaConfirmada", consulta.ConsultaConfirmada);
 
             try
             {

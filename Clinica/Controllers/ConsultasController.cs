@@ -1,67 +1,63 @@
-﻿using POJO;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Clinica.Models;
 using Clinica.ViewModels;
 using BLL;
+using POJO;
 
 namespace Clinica.Controllers
 {
     public class ConsultasController : Controller
     {
-        private readonly MedicoBLL medicoBLL;
-        private readonly ConsultaBLL consultaBLL;
-        private readonly PacienteBLL pacienteBLL;
+        private readonly MedicoBLL _medicoBLL;
+        private readonly ConsultaBLL _consultaBLL;
+        private readonly PacienteBLL _pacienteBLL;
+        private readonly LoginBLL _loginBLL;
 
+        
         public ConsultasController()
         {
-            medicoBLL = new MedicoBLL();
-            consultaBLL = new ConsultaBLL();
-            pacienteBLL = new PacienteBLL(); 
+            _medicoBLL = new MedicoBLL();
+            _consultaBLL = new ConsultaBLL();
+            _pacienteBLL = new PacienteBLL();
+            _loginBLL = new LoginBLL();
         }
 
+        
         public IActionResult Index()
         {
             return View();
         }
 
+
         [HttpGet]
         public IActionResult CreateConsultaModal(int id = 0)
         {
-            var viewModel = new CreateConsultaViewModel();
+            var viewModel = new CreateConsultaViewModel
+            {
+                Consulta = new ConsultaModel() 
+            };
 
-            // Edição
             if (id > 0)
             {
-                var consulta = consultaBLL.GetConsultaById(id); 
+                var consulta = _consultaBLL.GetConsultaById(id);
                 if (consulta != null)
                 {
-                    viewModel = new CreateConsultaViewModel
+                    viewModel.Consulta = new ConsultaModel
                     {
-                        Consulta = new ConsultaModel
-                        {
-                            Id = consulta.Id,
-                            DataHora = consulta.DataHora,
-                            MedicoId = consulta.MedicoId,
-                            PacienteId = consulta.PacienteId,
-                            Confirmada = consulta.Confirmada,
-                            Email = consulta.Email,
-                            UsuarioId = consulta.UsuarioId
-                        },
-                        Medicos = medicoBLL.GetMedicos(),
-                        //Pacientes = consultaBLL.GetPacientes() // Assumindo que você tenha esse método
+                        ConsultaId = consulta.ConsultaId,
+                        DataHora = consulta.DataHora,
+                        Medico = new Medico { MedicoId = consulta.MedicoId }, 
+                        Paciente = new Paciente { PacienteId = consulta.PacienteId },
+                        Email = consulta.Email                    
                     };
                 }
-            }
-            // Novo
-            else
-            {
-                viewModel = new CreateConsultaViewModel
+                else
                 {
-                    Consulta = new ConsultaModel(),
-                    Medicos = medicoBLL.GetMedicos(),
-                    Pacientes = consultaBLL.GetPacientes() // Assumindo que você tenha esse método
-                };
+                    return Json(new { status = false });
+                }
             }
+            viewModel.Medicos = _medicoBLL.GetAllMedicos();
+            viewModel.Pacientes = _pacienteBLL.GetAllPacientes();
 
             return PartialView("~/Views/Consultas/partials/_modalCreateConsultas.cshtml", viewModel);
         }
@@ -71,62 +67,65 @@ namespace Clinica.Controllers
         {
             var usuarioId = HttpContext.Session.GetString("UsuarioId");
 
-            if (string.IsNullOrEmpty(usuarioId))
-            {
-                return RedirectToAction("Login");
-            }
+            if (string.IsNullOrEmpty(usuarioId))            
+                return RedirectToAction("Login", "Login");            
 
-            var consultasDoUsuario = consultaBLL.GetConsultasPorUsuario(usuarioId);
-
+            var consultasDoUsuario = _consultaBLL.GetConsultasPorUsuario(usuarioId);
 
             return PartialView("~/Views/Consultas/partials/_gridConsulta.cshtml", consultasDoUsuario);
         }
 
+
         [HttpPost]
-        public JsonResult CreateConsulta(int PacienteId, int MedicoId, string Email, DateTime DataHora)
+        public JsonResult CreateConsulta(int pacienteId, int medicoId, string email, DateTime dataHora)
         {
             var usuarioId = ViewBag.UsuarioId?.ToString();
 
             var consulta = new Consulta
             {
-                PacienteId = PacienteId,
-                MedicoId = MedicoId,                
-                DataHora = DataHora,
+                Paciente = new Paciente { PacienteId = pacienteId },
+                Medico = new Medico { MedicoId = medicoId },
+                DataHora = dataHora,
+                ConsultaConfirmada = false,
+                Email = email 
             };
 
-            var resul = consultaBLL.CreateConsulta(consulta); 
+            var resultado = _consultaBLL.CreateConsulta(consulta);
 
-            return Json(new { status = resul });
+            return Json(new { status = resultado });
         }
 
+        
         [HttpPost]
-        public JsonResult UpdateConsulta(int id, int PacienteId, int MedicoId, string Email, DateTime DataHora)
+        public JsonResult UpdateConsulta(int ConsultaId, int pacienteId, int medicoId, string email, DateTime dataHora)
         {
-            var consulta = consultaBLL.GetConsultaById(id);
+            var consulta = _consultaBLL.GetConsultaById(ConsultaId);
             if (consulta != null)
             {
-                consulta.PacienteId = PacienteId;
-                consulta.MedicoId = MedicoId;
-                consulta.Email = Email;
-                consulta.DataHora = DataHora;
+                consulta.Paciente = new Paciente {PacienteId = pacienteId};
+                consulta.Medico = new Medico { MedicoId = medicoId };
+                consulta.Email = email;
+                consulta.DataHora = dataHora;
 
-                consultaBLL.UpdateConsulta(consulta); 
+                var resultado = _consultaBLL.UpdateConsulta(consulta);
 
-                return Json(new { status = true });
+                return Json(new { status = resultado });
             }
 
             return Json(new { status = false });
         }
 
+        
         [HttpPost]
-        public JsonResult DeletConsulta(int id)
+        public JsonResult DeleteConsulta(int ConsultaId)
         {
-            var consulta = consultaBLL.GetConsultaById(id);
-            if (consulta != null)
+            var consultaExistente = _consultaBLL.GetConsultaById(ConsultaId);
+            if (consultaExistente != null)
             {
-                consultaBLL.DeleteConsulta(id); 
-                return Json(new { status = true });
+                var resultado = _consultaBLL.DeleteConsulta(ConsultaId);
+                return Json(new { status = resultado });
             }
+
             return Json(new { status = false });
         }
     }
