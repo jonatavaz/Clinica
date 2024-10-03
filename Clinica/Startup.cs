@@ -7,18 +7,23 @@ namespace Clinica
 {
     public class Startup
     {
+
         public void ConfigureServices(IServiceCollection services)
         {
             // Adiciona serviços para o MVC
+            services.AddSession();
             services.AddControllersWithViews();
+            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSession();
             if (env.IsDevelopment())
             {
                 // Mostra a página de erro de desenvolvimento
                 app.UseDeveloperExceptionPage();
+                
             }
             else
             {

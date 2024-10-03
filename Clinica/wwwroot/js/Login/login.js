@@ -47,7 +47,7 @@ function login() {
         success: function (response) {
             console.log("Resposta do servidor:", response);
             if (response.success) {
-                window.location.href = '/Consultas/ListConsulta';
+                window.location.href = '/Consultas/Index';
             } else {
                 alert(response.message);
             }

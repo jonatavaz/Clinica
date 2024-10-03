@@ -12,7 +12,9 @@ namespace DAL
         public List<Paciente> GetAllPacientes()
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
-            string sql = "SELECT * FROM Paciente";
+            string sql = @"SELECT * FROM Paciente PC 
+                           INNER JOIN Pessoa P 
+                           ON PC.PacienteId = P.PessoaId;";
 
             try
             {

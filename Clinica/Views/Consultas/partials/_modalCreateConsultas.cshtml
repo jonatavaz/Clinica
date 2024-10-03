@@ -20,13 +20,13 @@
                 <input type="hidden" id="ConsultaId" value="@Model.Consulta?.ConsultaId" />
                 <div class="form-group">
                     <label for="PacienteId">Paciente</label>
-                    <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "Nome"))" class="form-control" id="PacienteId" required>
+                    <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "PessoaId", "Nome"))" class="form-control" id="PacienteId" required>
                         <option value="">Selecione um paciente</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="MedicoId">Médico</label>
-                    <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "Id", "Nome"))" class="form-control" id="MedicoId" required>
+                    <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "MedicoId", "Nome"))" class="form-control" id="MedicoId" required>
                         <option value="">Selecione um médico</option>
                     </select>
                 </div>

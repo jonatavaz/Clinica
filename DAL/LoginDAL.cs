@@ -69,6 +69,8 @@ namespace DAL
                 }
         }
 
+        
+
         public Login GetLoginById(int loginId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
@@ -93,32 +95,15 @@ namespace DAL
         public bool AddLogin(Login login)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
-            
-                string sql = @" DECLARE @PessoaId INT;
-                                DECLARE @PacienteId INT;
 
-
-                                INSERT INTO [Pessoa] (Nome, Email, Senha, DataNascimento)
-                                VALUES (@Nome, @Email, @Senha, @DataNascimento);
-
-                                SET @PessoaId = SCOPE_IDENTITY();
-
-
-
-                                SET @PacienteId = SCOPE_IDENTITY();
-
-
-                                INSERT INTO [Login] (DataHora, PacienteId, MedicoId)
-                                VALUES (GETDATE(), @PacienteId, NULL);";
+            string sql = @"INSERT INTO Pessoa (Nome, Email, Senha, DataNascimento)
+                           VALUES (@Nome, @Email, @Senha, @DataNascimento);";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@Nome", login.Nome);
                 parameters.Add("@Email", login.Email);
                 parameters.Add("@Senha", login.Senha);
                 parameters.Add("@DataNascimento", login.DataNascimento);
-
-                parameters.Add("@PacienteId", login.PacienteId);
-                parameters.Add("@MedicoId", login.MedicoId);
 
                 try
                 {
@@ -136,13 +121,18 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
             
-                string sql = "UPDATE Login SET DataHora = @DataHora, PacienteId = @PacienteId, MedicoId = @MedicoId WHERE LoginId = @LoginId";
+                string sql = @"UPDATE Login
+                                SET DataHora = @DataHora,
+                                Nome = @Nome,
+                                Email = @Email,
+                                DataNascimento = @DataNascimeno
+                                WHERE LoginId = @LoginId";
 
                 var parameters = new DynamicParameters();
                 parameters.Add("@DataHora", login.DataHora);
-                parameters.Add("@PacienteId", login.PacienteId);
-                parameters.Add("@MedicoId", login.MedicoId);
-                parameters.Add("@LoginId", login.LoginId);
+                parameters.Add("@Nome", login.Nome);
+                parameters.Add("@Email", login.Email);
+                parameters.Add("@DataNascimento", login.DataNascimento);
 
                 try
                 {

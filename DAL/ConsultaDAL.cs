@@ -8,7 +8,6 @@ namespace DAL
 {
     public class ConsultaDAL
     {
-
         public List<Consulta> GetConsultas()
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
@@ -28,21 +27,21 @@ namespace DAL
             {
                 conexao.Close();
             }
-
         }
-
         public List<Consulta> GetConsultasPorUsuario(string ConsultaId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "SELECT * FROM Consulta WHERE ConsultaId = @ConsultaId";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("@ConsultaId", ConsultaId);
-
+            string sql = @"SELECT * FROM Consulta C 
+                           INNER JOIN Medico M 
+                           ON C.MedicoId = M.MedicoId
+                           INNER JOIN Paciente P 
+                           ON C.PacienteId = P.PacienteId
+                           INNER JOIN Pessoa PS 
+                           ON PS.PessoaId = C.PacienteId;";
             try
             {
-                var result = conexao.Query<Consulta>(sql, parameters).ToList();
+                var result = conexao.Query<Consulta>(sql).ToList();
                 return result;
             }
             catch (Exception ex)
@@ -54,7 +53,6 @@ namespace DAL
                 conexao.Close();
             }
         }
-
         public Consulta GetConsultaById(int ConsultaId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
@@ -79,7 +77,6 @@ namespace DAL
             }
 
         }
-
         public bool AddConsulta(Consulta consulta)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
@@ -108,15 +105,13 @@ namespace DAL
             }
 
         }
-
         public bool UpdateConsulta(Consulta consulta)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
             string sql = @"UPDATE Consulta 
-                               SET MedicoId = @MedicoId, PacienteId = @PacienteId, DataHora = @DataHora, 
-                                   ConsultaConfirmada = @ConsultaConfirmada 
-                               WHERE ConsultaId = @ConsultaId";
+                           SET MedicoId = @MedicoId, PacienteId = @PacienteId, DataHora = @DataHora, ConsultaConfirmada = @ConsultaConfirmada 
+                           WHERE ConsultaId = @ConsultaId";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@MedicoId", consulta.MedicoId);
@@ -138,10 +133,7 @@ namespace DAL
             {
                 conexao.Close();
             }
-
         }
-
-        
         public bool DeleteConsulta(int ConsultaId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);

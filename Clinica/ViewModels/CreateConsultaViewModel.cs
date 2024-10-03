@@ -1,6 +1,5 @@
 ﻿using Clinica.Models;
 using POJO;
-using System.Collections.Generic;
 
 namespace Clinica.ViewModels
 {

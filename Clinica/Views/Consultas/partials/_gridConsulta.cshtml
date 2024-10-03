@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody id="consultasTable">
-        @if (Model != null && Model.Any())
+        @if (Model != null && Model.Count > 0)
         {
             foreach (var consulta in Model)
             {

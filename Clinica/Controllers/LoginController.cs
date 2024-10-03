@@ -85,7 +85,7 @@ namespace Clinica.Controllers
 
             if (resultado)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Index");
             }
 
             return Json(new { success = false, message = "Erro ao criar conta." });

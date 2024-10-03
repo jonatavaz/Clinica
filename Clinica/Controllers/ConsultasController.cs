@@ -29,12 +29,13 @@ namespace Clinica.Controllers
         }
 
 
-        [HttpGet]
         public IActionResult CreateConsultaModal(int id = 0)
         {
             var viewModel = new CreateConsultaViewModel
             {
-                Consulta = new ConsultaModel() 
+                Consulta = new ConsultaModel(),
+                Medicos = _medicoBLL.GetAllMedicos() ?? new List<Medico>(),
+                Pacientes = _pacienteBLL.GetAllPacientes() ?? new List<Paciente>() 
             };
 
             if (id > 0)
@@ -46,9 +47,9 @@ namespace Clinica.Controllers
                     {
                         ConsultaId = consulta.ConsultaId,
                         DataHora = consulta.DataHora,
-                        Medico = new Medico { MedicoId = consulta.MedicoId }, 
+                        Medico = new Medico { MedicoId = consulta.MedicoId },
                         Paciente = new Paciente { PacienteId = consulta.PacienteId },
-                        Email = consulta.Email                    
+                        Email = consulta.Email
                     };
                 }
                 else
@@ -56,8 +57,6 @@ namespace Clinica.Controllers
                     return Json(new { status = false });
                 }
             }
-            viewModel.Medicos = _medicoBLL.GetAllMedicos();
-            viewModel.Pacientes = _pacienteBLL.GetAllPacientes();
 
             return PartialView("~/Views/Consultas/partials/_modalCreateConsultas.cshtml", viewModel);
         }
@@ -72,7 +71,9 @@ namespace Clinica.Controllers
 
             var consultasDoUsuario = _consultaBLL.GetConsultasPorUsuario(usuarioId);
 
-            return PartialView("~/Views/Consultas/partials/_gridConsulta.cshtml", consultasDoUsuario);
+            var model = new List<ConsultaModel>();
+
+            return PartialView("~/Views/Consultas/partials/_gridConsulta.cshtml", model);
         }
 
 

@@ -14,7 +14,9 @@ namespace DAL
         public List<Medico> GetAllMedicos()
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
-            string sql = @$"select * from Medico";
+            string sql = @$"SELECT * FROM Medico M
+                            INNER JOIN Pessoa P 
+                           ON M.MedicoId = P.PessoaId;";
 
             try
             {
@@ -39,7 +41,10 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = @"SELECT * FROM Medico WHERE MedicoId = @MedicoId";
+            string sql = @"SELECT P.Nome, P.Email, P.DataNascimento FROM Medico M
+                            LEFT JOIN Pessoa P
+                            ON M.MedicoId = P.PessoaId
+                            WHERE M.MedicoId = @M.MedicoId;";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@MedicoId", MedicoId);
@@ -63,8 +68,8 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = @"INSERT INTO Medico (Nome, Email, Senha, DataNascimento, NomeEspecialidade) 
-                VALUES (@Nome, @Email, @Senha, @DataNascimento, @NomeEspecialidade)";
+            string sql = @"INSERT INTO Pessoa (Nome, Email, Senha, DataNascimento)
+                                VALUES (@Nome, @Email, @Senha, @DataNascimento);";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@Nome", medico.Nome);
