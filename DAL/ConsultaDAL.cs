@@ -28,36 +28,49 @@ namespace DAL
                 conexao.Close();
             }
         }
-        public List<Consulta> GetConsultasPorUsuario(string ConsultaId)
+        public List<dynamic> GetConsultasPorUsuario(string pacienteId)
         {
-            SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
+            using (SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao))
+            {
+                string sql = @"SELECT 
+                                C.ConsultaId,
+                                C.DataHora,
+                                C.ConsultaConfirmada,
+                                M.MedicoId,
+                                P.PacienteId,
+                                PS.Nome AS NomePaciente,
+                                PM.Nome AS NomeMedico,
+                                PS.Email AS EmailPaciente
+                            FROM 
+                                Consulta C
+                            INNER JOIN 
+                                Medico M ON C.MedicoId = M.MedicoId
+                            INNER JOIN 
+                                Paciente P ON C.PacienteId = P.PacienteId
+                            INNER JOIN 
+                                Pessoa PM ON PM.PessoaId = M.PessoaId 
+                            INNER JOIN 
+                                Pessoa PS ON PS.PessoaId = P.PessoaId;";
 
-            string sql = @"SELECT * FROM Consulta C 
-                           INNER JOIN Medico M 
-                           ON C.MedicoId = M.MedicoId
-                           INNER JOIN Paciente P 
-                           ON C.PacienteId = P.PacienteId
-                           INNER JOIN Pessoa PS 
-                           ON PS.PessoaId = C.PacienteId;";
-            try
-            {
-                var result = conexao.Query<Consulta>(sql).ToList();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-            finally
-            {
-                conexao.Close();
-            }
+                var parameters = new DynamicParameters();
+                parameters.Add("@PacienteId", pacienteId);
+
+                try
+                {
+                    var result = conexao.Query<dynamic>(sql, parameters).ToList();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    throw; 
+                }
+            } 
         }
         public Consulta GetConsultaById(int ConsultaId)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "SELECT * FROM Consulta WHERE ConsultaId = @ConsultaId";
+            string sql = @"SELECT * FROM Consulta WHERE ConsultaId = @ConsultaId";
 
             var parameters = new DynamicParameters();
             parameters.Add("@ConsultaId", ConsultaId);
@@ -146,7 +159,7 @@ namespace DAL
             try
             {
                 var result = conexao.Execute(sql, parameters);
-                return true;
+                return result > 0;
             }
             catch (Exception ex)
             {

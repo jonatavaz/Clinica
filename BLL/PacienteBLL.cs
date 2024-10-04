@@ -10,6 +10,10 @@ namespace BLL
         {
             dao = new PacienteDAL();
         }
+        public Paciente GetPacientePorNome(string nome)
+        {
+            return dao.GetPacientePorNome(nome);
+        }
         public List<Paciente> GetAllPacientes()
         {
             return dao.GetAllPacientes();

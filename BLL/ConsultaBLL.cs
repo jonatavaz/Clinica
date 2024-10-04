@@ -18,7 +18,7 @@ namespace BLL
             return dao.GetConsultas();
         }
 
-        public List<Consulta> GetConsultasPorUsuario(string pacienteId)
+        public List<dynamic> GetConsultasPorUsuario(string pacienteId)
         {
             return dao.GetConsultasPorUsuario(pacienteId);
         }

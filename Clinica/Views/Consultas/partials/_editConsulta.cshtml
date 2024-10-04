@@ -4,11 +4,11 @@
     <input type="hidden" asp-for="Consulta.ConsultaId" />
     <div>
         <label asp-for="Consulta.PacienteId">Paciente</label>
-        <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "Nome"))"></select>
+        <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "NomePaciente"))"></select>
     </div>
     <div>
         <label asp-for="Consulta.MedicoId">Médico</label>
-        <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "Id", "Nome"))"></select>
+        <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "Id", "NomeMedico"))"></select>
     </div>
     <div>
         <label asp-for="Consulta.DataHora">Data e Hora</label>

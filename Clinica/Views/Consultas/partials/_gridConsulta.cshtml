@@ -19,16 +19,16 @@
             {
                 <tr>
                     <td>@consulta.DataHora.ToString("g")</td>
-                    <td>@consulta.Medico?.Nome</td>
-                    <td>@consulta.Paciente?.Nome</td>
-                    <td>@consulta.Paciente?.Email</td>
+                    <td>@consulta.NomeMedico</td>
+                    <td>@consulta.NomePaciente</td>
+                    <td>@consulta.EmailPaciente</td>
                     <td>@(consulta.ConsultaConfirmada ? "Sim" : "Não")</td>
                     <td>
                         <a onclick="EditConsulta(@consulta.ConsultaId)"
                             class="btn btn-sm btn-outline-warning">
                             <i class="fa-solid fa-pen-to-square"></i> Editar
                         </a>
-                        <a onclick="DeletConsulta(@consulta.ConsultaId)" class="btn btn-sm btn-outline-danger">
+                        <a onclick="DeleteConsulta(@consulta.ConsultaId)" class="btn btn-sm btn-outline-danger">
                             <i class="fa-solid fa-trash"></i> Excluir
                         </a>
                     </td>

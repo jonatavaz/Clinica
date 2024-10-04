@@ -31,6 +31,31 @@ namespace DAL
             }
 
         }
+        public Paciente GetPacientePorNome(string nome)
+        {
+            var conexao = new SqlConnection(_Conexao.StringDeConexao);
+            
+                string sql = @"SELECT * FROM Paciente WHERE PessoaId IN (SELECT PessoaId FROM Pessoa WHERE Nome = @Nome)";
+                var parameters = new DynamicParameters();
+                parameters.Add("@Nome", nome);
+
+            try
+            {
+                var result = conexao.QuerySingleOrDefault<Paciente>(sql, parameters);
+                return result;
+
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                conexao.Close();
+            }
+
+        }
+
 
         public Paciente GetPacienteById(int PacienteId)
         {

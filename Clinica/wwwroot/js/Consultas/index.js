@@ -85,11 +85,11 @@ function SaveConsulta() {
     }
 }
 
-function DeletConsulta(consultaId) {
+function DeleteConsulta(consultaId) {
     if (confirm('Deseja realmente excluir esta consulta?')) {
         $.ajax({
             type: "POST",
-            url: '/Consultas/DeletConsulta',
+            url: '/Consultas/DeleteConsulta',
             dataType: "json",
             data: { id: consultaId },
             success: function (response) {

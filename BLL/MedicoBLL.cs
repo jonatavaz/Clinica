@@ -17,8 +17,15 @@ namespace BLL
         {
             return dao.GetAllMedicos();
         }
-
         
+
+        public Medico GetMedicoPorNome(string nome)
+        {
+            return dao.GetMedicoPorNome(nome);
+        }
+
+
+
         public Medico GetMedicoById(int medicoId)
         {
             if (medicoId <= 0)

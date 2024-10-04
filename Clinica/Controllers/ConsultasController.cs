@@ -66,15 +66,31 @@ namespace Clinica.Controllers
         {
             var usuarioId = HttpContext.Session.GetString("UsuarioId");
 
-            if (string.IsNullOrEmpty(usuarioId))            
-                return RedirectToAction("Login", "Login");            
+            if (string.IsNullOrEmpty(usuarioId))
+                return RedirectToAction("Login", "Login");
 
             var consultasDoUsuario = _consultaBLL.GetConsultasPorUsuario(usuarioId);
-
             var model = new List<ConsultaModel>();
+
+            foreach (var consulta in consultasDoUsuario)
+            {
+                model.Add(new ConsultaModel
+                {
+                    ConsultaId = consulta.ConsultaId,
+                    DataHora = consulta.DataHora,
+                    //Confirmada = consulta.ConsultaConfirmada,
+                    Medico = consulta.Medico, 
+                    Paciente = consulta.Paciente,
+                    NomeMedico = consulta.NomeMedico,
+                    NomePaciente = consulta.NomePaciente,
+                    EmailPaciente = consulta.EmailPaciente
+                });
+            }
 
             return PartialView("~/Views/Consultas/partials/_gridConsulta.cshtml", model);
         }
+
+
 
 
         [HttpPost]
@@ -87,8 +103,8 @@ namespace Clinica.Controllers
                 Paciente = new Paciente { PacienteId = pacienteId },
                 Medico = new Medico { MedicoId = medicoId },
                 DataHora = dataHora,
-                ConsultaConfirmada = false,
-                Email = email 
+                ConsultaConfirmada = true,
+                Email = email
             };
 
             var resultado = _consultaBLL.CreateConsulta(consulta);
@@ -96,7 +112,6 @@ namespace Clinica.Controllers
             return Json(new { status = resultado });
         }
 
-        
         [HttpPost]
         public JsonResult UpdateConsulta(int ConsultaId, int pacienteId, int medicoId, string email, DateTime dataHora)
         {
@@ -116,18 +131,30 @@ namespace Clinica.Controllers
             return Json(new { status = false });
         }
 
-        
+
         [HttpPost]
-        public JsonResult DeleteConsulta(int ConsultaId)
+        public JsonResult DeleteConsulta(int consultaId)
         {
-            var consultaExistente = _consultaBLL.GetConsultaById(ConsultaId);
-            if (consultaExistente != null)
+            if (consultaId <= 0)
             {
-                var resultado = _consultaBLL.DeleteConsulta(ConsultaId);
-                return Json(new { status = resultado });
+                return Json(new { status = false, message = "ID da consulta inválido." });
             }
 
-            return Json(new { status = false });
+            var consulta = _consultaBLL.GetConsultaById(consultaId);
+            if (consulta != null)
+            {
+                var resultado = _consultaBLL.DeleteConsulta(consultaId);
+                if (resultado)
+                {
+                    return Json(new { status = true });
+                }
+                else
+                {
+                    return Json(new { status = false, message = "Erro ao deletar a consulta." });
+                }
+            }
+
+            return Json(new { status = false, message = "Consulta não encontrada." });
         }
     }
 }
