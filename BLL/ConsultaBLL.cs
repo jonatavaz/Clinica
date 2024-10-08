@@ -28,6 +28,11 @@ namespace BLL
             return dao.GetConsultaById(ConsultaId);
         }
 
+        public List<Consulta> GetConsultasPorMedicoEData(int medicoId, DateTime dataHora)
+        {
+            return dao.GetConsultasPorMedicoEData(medicoId, dataHora);
+        }
+
         public bool CreateConsulta(Consulta consulta)
         {
             return dao.AddConsulta(consulta);

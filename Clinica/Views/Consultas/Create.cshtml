@@ -1,23 +1,23 @@
 ﻿@model Clinica.ViewModels.CreateConsultaViewModel
 
 @{
-    var usuarioId = ViewBag.UsuarioId; 
+    var usuarioId = ViewBag.UsuarioId;
 }
 
 <div class="container-md">
     <h2>Agendar Nova Consulta</h2>
 
     <form asp-action="Create" method="post" class="form-consulta">
-        <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId" /> 
+        <input type="hidden" name="UsuarioId" value="@usuarioId" />
         <div class="form-group">
             <label for="PacienteId">Paciente</label>
-            <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "Nome"))" class="form-control" id="PacienteId" required>
+            <input asp-for="Paciente.Nome" class="form-control" id="NomePaciente" required />
                 <option value="">Selecione um paciente</option>
             </select>
         </div>
         <div class="form-group">
             <label for="MedicoId">Médico</label>
-            <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "Id", "Nome"))" class="form-control" id="MedicoId" required>
+            <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "MedicoId", "Nome"))" class="form-control" id="MedicoId" required>
                 <option value="">Selecione um médico</option>
             </select>
         </div>
@@ -29,11 +29,12 @@
             <label for="DataHora">Data e Hora</label>
             <input asp-for="Consulta.DataHora" type="datetime-local" class="form-control" id="DataHora" required />
         </div>
-        <button type="button" class="btn btn-primary" onclick="InserirConsulta()">Agendar</button>
-
+        <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
+
     <a onclick="RetornarTela()" class="btn btn-secondary">Voltar</a>
 </div>
-@section Scripts{
+
+@section Scripts {
     <script src="~/js/Consultas/index.js" asp-append-version="true"></script>
 }

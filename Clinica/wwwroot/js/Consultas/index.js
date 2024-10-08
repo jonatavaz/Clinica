@@ -2,11 +2,17 @@
     ListConsulta();
 });
 
-function CreateConsultaModal() {
+function CreateConsultaModal(pacienteId) {
+
+    let id = pacienteId;
+
     $.ajax({
         type: "GET",
         url: '/Consultas/CreateConsultaModal',
         dataType: "html",
+        data: {
+            id: id            
+        },
         success: function (response) {
             $('#createConsulta').html(response).ready(function () {
                 $('#modalCreateConsulta').modal('show');
@@ -19,18 +25,36 @@ function CreateConsultaModal() {
 }
 
 function EditConsulta(consultaId) {
+    let pacienteId = $('#PacienteId').val();
+    let medicoId = $('#MedicoId').val();
+    let dataHora = $('#DataHora').val();
+
+    if (!pacienteId || !medicoId || !dataHora) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+    }
+
     $.ajax({
-        type: "GET",
-        url: `/Consultas/CreateConsultaModal`,
-        data: { "id": consultaId },
-        dataType: "html",
+        type: "POST",
+        url: `/Consultas/EditConsulta`,
+        data: {
+            ConsultaId: consultaId,
+            PacienteId: pacienteId, 
+            MedicoId: medicoId,
+            DataHora: dataHora
+        },
+        dataType: "json",
         success: function (response) {
-            $('#createConsulta').html(response).ready(function () {
-                $('#modalCreateConsulta').modal('show');
-            });
+            if (response.status) {
+                ListConsulta();
+                $('#modalCreateConsulta').modal('hide');
+                alert('Consulta editada com sucesso!');
+            } else {
+                alert('Erro: ' + (response.message || 'Ocorreu um erro ao editar a consulta.'));
+            }
         },
         error: function () {
-            alert("Ocorreu um erro ao carregar os dados da consulta.");
+            alert("Ocorreu um erro ao editar a consulta.");
         }
     });
 }
@@ -50,17 +74,29 @@ function ListConsulta() {
 }
 
 function SaveConsulta() {
-    let PacienteId = $('#PacienteId').val();
+    let PacienteNome = $('#NomePaciente').val();
     let MedicoId = $('#MedicoId').val();
     let Email = $('#Email').val();
+    let DataNascimento = $('#DataNascimento').val();
     let DataHora = $('#DataHora').val();
     let consultaId = $('#ConsultaId').val() || 0;
 
-    if (PacienteId) {
+    
+    if (PacienteNome && MedicoId && Email && DataHora) {
+        
         if (confirm('Deseja salvar a consulta?')) {
-            let url = consultaId > 0 ? '/Consultas/UpdateConsulta' : '/Consultas/CreateConsulta';
-            let data = consultaId > 0 ? { id: consultaId, PacienteId, MedicoId, Email, DataHora } : { PacienteId, MedicoId, Email, DataHora };
+            
+            let url = consultaId > 0 ? '/Consultas/EditConsulta' : '/Consultas/CreateConsulta';
+            let data = {
+                PacienteNome: PacienteNome,
+                MedicoId: MedicoId,
+                Email: Email,
+                DataNascimento: DataNascimento,
+                DataHora: DataHora,
+                ConsultaId: consultaId 
+            };
 
+            
             $.ajax({
                 type: "POST",
                 url: url,
@@ -68,11 +104,11 @@ function SaveConsulta() {
                 data: data,
                 success: function (response) {
                     if (response.status) {
-                        ListConsulta();
-                        $('#modalCreateConsulta').modal('hide');
-                        alert('Consulta salva com sucesso!');
+                        ListConsulta(); 
+                        $('#modalCreateConsulta').modal('hide'); 
+                        alert('Consulta salva com sucesso!'); 
                     } else {
-                        alert('Ocorreu um erro');
+                        alert('Ocorreu um erro: ' + (response.message || 'Erro ao salvar a consulta.'));
                     }
                 },
                 error: function () {
@@ -86,23 +122,26 @@ function SaveConsulta() {
 }
 
 function DeleteConsulta(consultaId) {
-    if (confirm('Deseja realmente excluir esta consulta?')) {
+    if (consultaId && confirm('Deseja realmente excluir esta consulta?')) {
         $.ajax({
             type: "POST",
             url: '/Consultas/DeleteConsulta',
             dataType: "json",
-            data: { id: consultaId },
+            data: { consultaId: consultaId },
             success: function (response) {
                 if (response.status) {
-                    alert('Consulta excluída com sucesso.');
                     ListConsulta();
+                    alert('Consulta excluída com sucesso!');
                 } else {
-                    alert('Erro ao excluir a consulta.');
+                    alert('Erro: ' + response.message);
                 }
             },
             error: function () {
-                alert("Ocorreu um erro ao tentar excluir a consulta.");
+                alert("Ocorreu um erro ao excluir a consulta.");
             }
         });
+    } else {
+        alert("ID da consulta inválido.");
     }
 }
+

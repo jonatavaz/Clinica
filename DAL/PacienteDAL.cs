@@ -13,8 +13,7 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
             string sql = @"SELECT * FROM Paciente PC 
-                           INNER JOIN Pessoa P 
-                           ON PC.PacienteId = P.PessoaId;";
+                           INNER JOIN Pessoa P ON PC.PessoaId = P.PessoaId;";
 
             try
             {
@@ -31,30 +30,30 @@ namespace DAL
             }
 
         }
-        public Paciente GetPacientePorNome(string nome)
+        public List<Paciente> GetPacientesPorNome(string nome)
         {
-            var conexao = new SqlConnection(_Conexao.StringDeConexao);
-            
-                string sql = @"SELECT * FROM Paciente WHERE PessoaId IN (SELECT PessoaId FROM Pessoa WHERE Nome = @Nome)";
+            using (var conexao = new SqlConnection(_Conexao.StringDeConexao))
+            {
+                string sql = @"SELECT PC.* 
+                       FROM Paciente PC 
+                       INNER JOIN Pessoa P ON PC.PessoaId = P.PessoaId 
+                       WHERE P.Nome = @Nome";
+
                 var parameters = new DynamicParameters();
                 parameters.Add("@Nome", nome);
 
-            try
-            {
-                var result = conexao.QuerySingleOrDefault<Paciente>(sql, parameters);
-                return result;
-
+                try
+                {
+                    var result = conexao.Query<Paciente>(sql, parameters).ToList(); // Retorna uma lista
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
             }
-            catch
-            {
-                throw;
-            }
-            finally
-            {
-                conexao.Close();
-            }
-
         }
+
 
 
         public Paciente GetPacienteById(int PacienteId)
@@ -81,22 +80,35 @@ namespace DAL
 
         }
 
-        public bool AddPaciente(Paciente paciente)
+        public int AddPaciente(Paciente paciente)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "INSERT INTO Paciente (Nome, Email, Senha, DataNascimento) VALUES (@Nome, @Email, @Senha, @DataNascimento)";
+            // Primeiro, insira na tabela Pessoa
+            string sqlPessoa = @"INSERT INTO Pessoa (Nome, Email, Senha, DataNascimento)
+                         OUTPUT INSERTED.PessoaId
+                         VALUES (@Nome, @Email, @Senha, @DataNascimento);";
 
-            DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("@Nome", paciente.Nome);
-            parameters.Add("@Email", paciente.Email);
-            parameters.Add("@Senha", paciente.Senha);
-            parameters.Add("@DataNascimento", paciente.DataNascimento);
+            DynamicParameters parametersPessoa = new DynamicParameters();
+            parametersPessoa.Add("@Nome", paciente.Nome);
+            parametersPessoa.Add("@Email", paciente.Email);
+            parametersPessoa.Add("@Senha", paciente.Senha); 
+            parametersPessoa.Add("@DataNascimento", paciente.DataNascimento);
 
             try
             {
-                var result = conexao.Query<Paciente>(sql, parameters).ToList();
-                return true;
+                var pessoaId = conexao.QuerySingle<int>(sqlPessoa, parametersPessoa);
+
+                // Depois, insira na tabela Paciente
+                string sqlPaciente = @"INSERT INTO Paciente (PessoaId)
+                               OUTPUT INSERTED.PacienteId
+                               VALUES (@PessoaId);";
+
+                var parametersPaciente = new DynamicParameters();
+                parametersPaciente.Add("@PessoaId", pessoaId);
+
+                var pacienteId = conexao.QuerySingle<int>(sqlPaciente, parametersPaciente);
+                return pacienteId; // Retorna o ID do paciente
             }
             catch (Exception ex)
             {
@@ -106,8 +118,8 @@ namespace DAL
             {
                 conexao.Close();
             }
-
         }
+
 
         public bool UpdatePaciente(Paciente paciente)
         {

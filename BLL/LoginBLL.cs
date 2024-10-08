@@ -25,7 +25,7 @@ namespace BLL
             return dao.GetLoginById(loginId);
         }
 
-        public bool AddLogin(Login login)
+        public bool AddLogin(Login login, bool isPaciente)
         {
             ValidateLogin(login);
 
@@ -34,7 +34,7 @@ namespace BLL
                 login.DataHora = DateTime.Now;
             }
 
-            return dao.AddLogin(login);
+            return dao.AddLogin(login, isPaciente);
         }
 
         public bool UpdateLogin(Login login)
@@ -55,7 +55,7 @@ namespace BLL
         }
 
         public Login Authenticate(Login login)
-        {
+         {
             ValidateLogin(login);
             
             var usuarioAutenticado = dao.GetLogin(login.Email, login.Senha);

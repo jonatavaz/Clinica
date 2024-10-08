@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt" Version="1.0.0" />
+    <PackageReference Include="BCrypt.Net" Version="0.1.0" />
+    <PackageReference Include="BCrypt.Net-Core" Version="1.6.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.Extensions" Version="6.0.33" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />

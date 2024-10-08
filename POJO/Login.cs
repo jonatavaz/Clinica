@@ -12,6 +12,7 @@ namespace POJO
         public DateTime DataHora { get; set; }
         public int PacienteId { get; set; }
         public int MedicoId { get; set; }
+        public string Senha { get; set; }
 
     }
 }

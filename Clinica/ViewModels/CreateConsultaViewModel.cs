@@ -3,10 +3,12 @@ using POJO;
 
 namespace Clinica.ViewModels
 {
-    public class CreateConsultaViewModel
+    public class CreateConsultaViewModel 
     {
         public ConsultaModel Consulta { get; set; }
         public List<Medico> Medicos { get; set; } 
+        public Paciente Paciente { get; set; } 
         public List<Paciente> Pacientes { get; set; } 
+    
     }
 }

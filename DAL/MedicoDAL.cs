@@ -16,14 +16,10 @@ namespace DAL
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
             string sql = @$"SELECT * FROM Medico M
                             INNER JOIN Pessoa P 
-                           ON M.MedicoId = P.PessoaId;";
+                           ON M.PessoaId = P.PessoaId;";
 
             try
             {
-                //insert/update/delete --- execute
-
-                //listagem - query
-
                 var result = conexao.Query<Medico>(sql).ToList();
                 return result;
             }
@@ -68,8 +64,8 @@ namespace DAL
 
             string sql = @"SELECT P.Nome, P.Email, P.DataNascimento FROM Medico M
                             LEFT JOIN Pessoa P
-                            ON M.MedicoId = P.PessoaId
-                            WHERE M.MedicoId = @M.MedicoId;";
+                            ON M.PessoaId = P.PessoaId
+                            WHERE M.PessoaId = @M.MedicoId;";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@MedicoId", MedicoId);

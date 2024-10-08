@@ -4,7 +4,7 @@
     <input type="hidden" asp-for="Consulta.ConsultaId" />
     <div>
         <label asp-for="Consulta.PacienteId">Paciente</label>
-        <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "Id", "NomePaciente"))"></select>
+        <input asp-for="Paciente.Nome" class="form-control" id="NomePaciente" required /></select>
     </div>
     <div>
         <label asp-for="Consulta.MedicoId">Médico</label>

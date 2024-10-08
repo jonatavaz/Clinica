@@ -8,7 +8,6 @@ namespace Clinica.Models
         public Paciente Paciente { get; set; }
 
         //extra:
-
         public string NomePaciente { get; set; }
         public string NomeMedico { get; set; }
         public string EmailPaciente { get; set; }

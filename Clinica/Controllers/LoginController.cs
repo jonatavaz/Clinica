@@ -3,7 +3,6 @@ using Clinica.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using POJO;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Clinica.Controllers
 {
@@ -40,15 +39,15 @@ namespace Clinica.Controllers
         [HttpPost]
         public IActionResult Authenticate(LoginViewModel model)
         {
-            if (model == null)
+            if (model == null || string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Senha))
             {
-                return Json(new { success = false });
+                return Json(new { success = false, message = "E-mail e senha são obrigatórios." });
             }
 
             var login = new Login
             {
                 Email = model.Email,
-                Senha = model.Senha 
+                Senha = model.Senha
             };
 
             var usuarioAutenticado = _loginBLL.Authenticate(login);
@@ -73,6 +72,10 @@ namespace Clinica.Controllers
             if (string.IsNullOrEmpty(model.Senha))
                 return Json(new { success = false, message = "Verifique a senha." });
 
+            
+            if (string.IsNullOrEmpty(model.TipoUsuario))
+                return Json(new { success = false, message = "Selecione um tipo de usuário." });
+
             var novoLogin = new Login
             {
                 Nome = model.Nome,
@@ -81,7 +84,8 @@ namespace Clinica.Controllers
                 DataNascimento = model.DataNascimento
             };
 
-            var resultado = _loginBLL.AddLogin(novoLogin);
+            bool isPaciente = model.TipoUsuario == "Paciente";
+            var resultado = _loginBLL.AddLogin(novoLogin, isPaciente);
 
             if (resultado)
             {

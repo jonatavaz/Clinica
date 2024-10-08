@@ -10,42 +10,75 @@
                 }
                 else
                 {
-                    <h1 class="modal-title fs-5" id="modalCreateConsultaLabel">Agendar Nova Consulta</h1>                    
+                    <h1 class="modal-title fs-5" id="modalCreateConsultaLabel">Agendar Nova Consulta</h1>
                 }
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                
-                <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId" />
-                <input type="hidden" id="ConsultaId" value="@Model.Consulta?.ConsultaId" />
-                <div class="form-group">
-                    <label for="PacienteId">Paciente</label>
-                    <select asp-for="Consulta.PacienteId" asp-items="@(new SelectList(Model.Pacientes, "PessoaId", "Nome"))" class="form-control" id="PacienteId" required>
-                        <option value="">Selecione um paciente</option>
-                    </select>
-                </div>
+
+                <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId"/>
+                <input type="hidden" id="ConsultaId" value="@Model.Consulta?.ConsultaId"/>
+
+
+                @* Edicao *@
+                @if (Model.Consulta != null && Model.Consulta.ConsultaId > 0)
+                {
+                    <div class="form-group">
+                        <label for="PacienteId">Paciente</label>
+                        <select asp-for="Consulta.PacienteId" 
+                            asp-items="@(new SelectList(Model.Pacientes, "PessoaId", "Nome"))" 
+                            class="form-control" id="PacienteId" required>
+                            <option value="">Selecione um paciente</option>
+                        </select>
+                    </div>
+                }
+                else
+                {
+                    <div class="form-group">
+                        <label for="NomePaciente">Nome do Paciente</label>
+                        <input asp-for="Paciente.Nome" class="form-control" id="NomePaciente"
+                               value="@Model.Consulta?.Paciente?.Nome" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="EmailPaciente">E-mail do Paciente</label>
+                        <input asp-for="Paciente.Email" type="email" class="form-control" id="Email"
+                               value="@Model.Consulta?.Paciente?.Email" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="DataNascimentoPaciente">Data de Nascimento</label>
+                        <input asp-for="Paciente.DataNascimento" type="date" class="form-control" id="DataNascimento"
+                               required />
+                    </div>
+                }
+                                
                 <div class="form-group">
                     <label for="MedicoId">Médico</label>
-                    <select asp-for="Consulta.MedicoId" asp-items="@(new SelectList(Model.Medicos, "MedicoId", "Nome"))" class="form-control" id="MedicoId" required>
+                    <select asp-for="Consulta.MedicoId"
+                            asp-items="@(new SelectList(Model.Medicos, "MedicoId", "Nome"))"
+                            class="form-control" id="MedicoId" required>
                         <option value="">Selecione um médico</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="Email">E-mail</label>
-                    <input asp-for="Consulta.Email" type="email" class="form-control" id="Email" required />
-                </div>
+
+
                 <div class="form-group">
                     <label for="DataHora">Data e Hora</label>
                     <input asp-for="Consulta.DataHora" type="datetime-local" class="form-control" id="DataHora" required />
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
 
-                
-                <button type="button" class="btn btn-primary" onclick="SaveConsulta()">Salvar</button>
-
+                @if (Model.Consulta != null && Model.Consulta.ConsultaId > 0)
+                {
+                    <button type="button" class="btn btn-primary" onclick="EditConsulta(@Model.Consulta.ConsultaId)">Salvar</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-primary" onclick="SaveConsulta()">Salvar</button>
+                }
             </div>
         </div>
     </div>

@@ -70,7 +70,26 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = @"SELECT * FROM Consulta WHERE ConsultaId = @ConsultaId";
+            string sql = @"SELECT 
+                            C.ConsultaId,
+                            C.DataHora,
+                            C.ConsultaConfirmada,
+                            M.MedicoId,
+                            P.PacienteId,
+                            PS.Nome ,
+                            PM.Nome ,
+                            PS.Email
+                        FROM 
+                            Consulta C
+                        INNER JOIN 
+                            Medico M ON C.MedicoId = M.MedicoId
+                        INNER JOIN 
+                            Paciente P ON C.PacienteId = P.PacienteId
+                        INNER JOIN 
+                            Pessoa PM ON PM.PessoaId = M.PessoaId  
+                        INNER JOIN 
+                            Pessoa PS ON PS.PessoaId = P.PessoaId
+                        WHERE C.ConsultaId = @ConsultaId";
 
             var parameters = new DynamicParameters();
             parameters.Add("@ConsultaId", ConsultaId);
@@ -90,6 +109,36 @@ namespace DAL
             }
 
         }
+
+        public List<Consulta> GetConsultasPorMedicoEData(int medicoId, DateTime dataHora)
+        {
+            var conexao = new SqlConnection(_Conexao.StringDeConexao);
+            
+                string sql = @"SELECT * 
+                       FROM Consulta 
+                       WHERE MedicoId = @MedicoId 
+                       AND CAST(DataHora AS DATE) = @DataHora"; 
+
+                var parameters = new DynamicParameters();
+                parameters.Add("@MedicoId", medicoId);
+                parameters.Add("@DataHora", dataHora.Date); 
+
+                try
+                {
+                    var result = conexao.Query<Consulta>(sql, parameters).ToList();
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+                finally
+                {
+                    conexao.Close();
+                }
+
+        }
+
         public bool AddConsulta(Consulta consulta)
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
@@ -98,8 +147,8 @@ namespace DAL
                                VALUES (@MedicoId, @PacienteId, @DataHora, @ConsultaConfirmada)";
 
             DynamicParameters parameters = new DynamicParameters();
-            parameters.Add("@MedicoId", consulta.MedicoId);
-            parameters.Add("@PacienteId", consulta.PacienteId);
+            parameters.Add("@MedicoId", consulta.Medico.MedicoId);
+            parameters.Add("@PacienteId", consulta.Paciente.PacienteId);
             parameters.Add("@DataHora", consulta.DataHora);
             parameters.Add("@ConsultaConfirmada", consulta.ConsultaConfirmada);
 
@@ -124,7 +173,7 @@ namespace DAL
 
             string sql = @"UPDATE Consulta 
                            SET MedicoId = @MedicoId, PacienteId = @PacienteId, DataHora = @DataHora, ConsultaConfirmada = @ConsultaConfirmada 
-                           WHERE ConsultaId = @ConsultaId";
+                           WHERE ConsultaId = @ConsultaId;";
 
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("@MedicoId", consulta.MedicoId);
@@ -151,7 +200,7 @@ namespace DAL
         {
             SqlConnection conexao = new SqlConnection(_Conexao.StringDeConexao);
 
-            string sql = "DELETE FROM Consulta WHERE ConsultaId = @ConsultaId";
+            string sql = "DELETE FROM Consulta WHERE ConsultaId = @ConsultaId;";
 
             var parameters = new DynamicParameters();
             parameters.Add("@ConsultaId", ConsultaId);
@@ -159,7 +208,7 @@ namespace DAL
             try
             {
                 var result = conexao.Execute(sql, parameters);
-                return result > 0;
+                return true;
             }
             catch (Exception ex)
             {
