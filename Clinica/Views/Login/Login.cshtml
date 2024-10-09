@@ -1,6 +1,8 @@
 ﻿@model Clinica.ViewModels.LoginViewModel
 
+
 <div class="container-md">
+    
     <h2>Login</h2>
     <form id="loginForm" onsubmit="event.preventDefault(); login();">
         <div class="form-group">
@@ -15,7 +17,6 @@
         </div>
         <button type="submit" class="btn btn-primary">Entrar</button>
     </form>
-
 
     @if (!ViewData.ModelState.IsValid)
     {
@@ -35,4 +36,3 @@
 @section Scripts {
     <script src="~/js/Login/login.js" asp-append-version="true"></script>
 }
-

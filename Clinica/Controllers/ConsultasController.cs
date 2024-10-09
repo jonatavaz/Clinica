@@ -91,13 +91,11 @@ namespace Clinica.Controllers
         public JsonResult CreateConsulta(string pacienteNome, int medicoId, string email, DateTime? dataNascimento, DateTime dataHora)
         {
             var usuarioId = ViewBag.UsuarioId?.ToString();
-
-            
+                        
             if (string.IsNullOrWhiteSpace(pacienteNome) || medicoId <= 0 || string.IsNullOrWhiteSpace(email) || dataHora == default)
             {
                 return Json(new { status = false, message = "Dados inválidos." });
             }
-
             
             if (!IsHorarioDisponivel(dataHora, medicoId))            
                 return Json(new { status = false, message = "O horário selecionado não está disponível." });
