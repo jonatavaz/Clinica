@@ -1,4 +1,6 @@
-﻿$(document).ready(function () {
+﻿import { Helper } from '../Global/Helper.js';
+const helper = new Helper();
+$(document).ready(function () {
     $('.date').mask('00/00/0000');
     $('.time').mask('00:00:00');
     $('.date_time').mask('00/00/0000 00:00:00');
@@ -34,27 +36,42 @@
     $('.selectonfocus').mask("00/00/0000", { selectOnFocus: true });
 });
 
-function login() {
-    console.log("Tentando fazer login...");
+window.login = login;
 
-    const formData = $('#loginForm').serialize();
-    console.log("Dados do formulário:", formData);
+async function login() {
 
-    $.ajax({
-        type: "POST",
-        url: '/Login/Authenticate',
-        data: formData,
-        success: function (response) {
-            console.log("Resposta do servidor:", response);
-            if (response.success) {
-                window.location.href = '/Consultas/Index';
-            } else {
-                alert(response.message);
-            }
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-            console.error("Erro:", textStatus, errorThrown);
-            alert("Ocorreu um erro ao tentar fazer login.");
-        }
-    });
+    let Email = $('#Email').val();
+    let Senha = $('#Senha').val();
+        
+
+     try {
+         const response = await helper.postFormData('/Login/Authenticate', { "Email": Email, "Senha": Senha })
+         if (response.success) {
+             window.location.href = '/Consultas/Index';
+         } else {
+             alert(response.message);
+         }
+
+     } catch (e) {
+         console.log(e);
+     }
+
+     //const formData = $('#loginForm').serialize();
+    //$.ajax({
+    //    type: "POST",
+    //    url: '/Login/Authenticate',
+    //    data: formData,
+    //    success: function (response) {
+    //        console.log("Resposta do servidor:", response);
+    //        if (response.success) {
+    //            window.location.href = '/Consultas/Index';
+    //        } else {
+    //            alert(response.message);
+    //        }
+    //    },
+    //    error: function (jqXHR, textStatus, errorThrown) {
+    //        console.error("Erro:", textStatus, errorThrown);
+    //        alert("Ocorreu um erro ao tentar fazer login.");
+    //    }
+    //});
 }

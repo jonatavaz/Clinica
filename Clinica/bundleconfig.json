@@ -1,0 +1,14 @@
+[
+  {
+    "outputFileName": "wwwroot/js/Consultas/index.min.js",
+    "inputFiles": [
+      "wwwroot/js/Consultas/index.js"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/Login/login.min.js",
+    "inputFiles": [
+      "wwwroot/js/Login/login.js"
+    ]
+  }
+]

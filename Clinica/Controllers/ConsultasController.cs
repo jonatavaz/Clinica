@@ -26,6 +26,7 @@ namespace Clinica.Controllers
             return View();
         }
 
+        [HttpPost]
         public IActionResult CreateConsultaModal(int id = 0)
         {
             var viewModel = new CreateConsultaViewModel
@@ -60,7 +61,7 @@ namespace Clinica.Controllers
             return PartialView("~/Views/Consultas/partials/_modalCreateConsultas.cshtml", viewModel);
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult ListConsulta()
         {
             var usuarioId = HttpContext.Session.GetString("UsuarioId");

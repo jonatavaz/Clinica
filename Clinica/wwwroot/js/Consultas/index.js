@@ -1,20 +1,42 @@
-﻿$(document).ready(function () {
+﻿import { Helper } from '../Global/Helper.js';
+const helper = new Helper();
+$(document).ready(function () {
     ListConsulta();
 });
 
-function CreateConsultaModal(pacienteId) {
+window.CreateConsultaModal = CreateConsultaModal;
+window.EditConsulta = EditConsulta;
+window.SaveConsulta = SaveConsulta;
+window.DeleteConsulta = DeleteConsulta;
 
-    let id = pacienteId;
 
-    fetch(`/Consultas/CreateConsultaModal/${id}`, {
-        method: 'GET'
-    })
-        .then((res) => res.text())
-        .then((data) =>
-            $('#createConsulta').html(data).ready(function () {
+async function CreateConsultaModal(pacienteId) {
+
+    //let id = pacienteId;
+    try {
+        const response = await helper.postPartial('/Consultas/CreateConsultaModal', { "id": pacienteId });
+
+        if (response != null) {
+            $('#createConsulta').html(response).ready(function () {
                 $('#modalCreateConsulta').modal('show');
-            }))
-        .catch((err) => console.error(err));
+            })
+        }
+
+    } catch (e) {
+        console.log(e);
+    }
+
+
+
+    //fetch(`/Consultas/CreateConsultaModal/${id}`, {
+    //    method: 'GET'
+    //})
+    //    .then((res) => res.text())
+    //    .then((data) =>
+    //        $('#createConsulta').html(data).ready(function () {
+    //            $('#modalCreateConsulta').modal('show');
+    //        }))
+    //    .catch((err) => console.error(err));
 }
 
 //$.ajax({
@@ -34,36 +56,56 @@ function CreateConsultaModal(pacienteId) {
 //    }
 //});
 
-function EditConsulta(consultaId) {
+async function EditConsulta(consultaId) {
+    let pacienteId = $('#PacienteId').val();
+    let medicoId = $('#MedicoId').val();
+    let dataHora = $('#DataHora').val();
 
-    var formData = new FormData;
-    formData.append('consultaId', consultaId);
-    formData.append('pacienteId', $('#PacienteId').val());
-    formData.append('medicoId', $('#MedicoId').val());
-    formData.append('dataHora', $('#DataHora').val());
-
-
-    if (!formData.get('medicoId') || !formData.get('medicoId') || !formData.get('dataHora')) {
+    if (!pacienteId || !medicoId || !dataHora) {
         alert("Por favor, preencha todos os campos obrigatórios.");
         return;
     }
 
-    fetch('/Consultas/EditConsulta', {
-        method: 'POST',
-        body: formData
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            if (data.status) {
-                ListConsulta();
-                $('#modalCreateConsulta').modal('hide');
-                alert('Consulta editada com sucesso!');
-            } else {
-                alert('Erro: ' + (data.message || 'Ocorreu um erro ao editar a consulta.'));
+    try {
+        const response = await helper.postFormData('/Consultas/EditConsulta', { "consultaId": consultaId, "pacienteId": pacienteId, "medicoId": medicoId, "dataHora": dataHora });
 
-            }
-        }).catch((err) => console.error(err));
-}
+        if (response.status) {
+            await ListConsulta();
+            $('#modalCreateConsulta').modal('hide');
+            alert('Consulta editada com sucesso!');
+        } else {
+            alert('Erro: ' + (response.message || 'Ocorreu um erro ao editar a consulta.'));
+        }
+
+    } catch (e) {
+        console.log(e);
+    }
+
+
+
+    //var formData = new FormData;
+    //formData.append('consultaId', consultaId);
+    //formData.append('pacienteId', $('#PacienteId').val());
+    //formData.append('medicoId', $('#MedicoId').val());
+    //formData.append('dataHora', $('#DataHora').val());
+
+
+//    fetch('/Consultas/EditConsulta', {
+//        method: 'POST',
+//        body: formData
+//    })
+//        .then((res) => res.json())
+//        .then((data) => {
+//            if (data.status) {
+//                ListConsulta();
+//                $('#modalCreateConsulta').modal('hide');
+//                alert('Consulta editada com sucesso!');
+//            } else {
+//                alert('Erro: ' + (data.message || 'Ocorreu um erro ao editar a consulta.'));
+
+//            }
+//        }).catch((err) => console.error(err));
+//}
 
 //    $.ajax({
 //        type: "POST",
@@ -88,15 +130,20 @@ function EditConsulta(consultaId) {
 //            alert("Ocorreu um erro ao editar a consulta.");
 //        }
 //    });
-//}
+}
 
-function ListConsulta() {
+async function ListConsulta() {
 
-    fetch(`/Consultas/ListConsulta`, {
-        method: 'GET'
-    }).then((res) => res.text())
-        .then((data) => $('#gridConsulta').html(data))
-        .catch((err) => console.error(err));
+    const response = await helper.postPartial('/Consultas/ListConsulta', {});
+    if (response != null) {
+        $('#gridConsulta').html(response)
+    }
+
+    //fetch(`/Consultas/ListConsulta`, {
+    //    method: 'GET'
+    //}).then((res) => res.text())
+    //    .then((data) => $('#gridConsulta').html(data))
+    //    .catch((err) => console.error(err));
 }
 
 //    $.ajax({
@@ -112,41 +159,53 @@ function ListConsulta() {
 //    });
 //}
 
-function SaveConsulta() {
-    //let PacienteNome = $('#NomePaciente').val();
-    //let MedicoId = $('#MedicoId').val();
-    //let Email = $('#Email').val();
-    //let DataNascimento = $('#DataNascimento').val();
-    //let DataHora = $('#DataHora').val();
-    //let consultaId = $('#ConsultaId').val() || 0;
-    var formData = new FormData();
+async function SaveConsulta() {
+    let pacienteNome = $('#NomePaciente').val();
+    let medicoId = $('#MedicoId').val();
+    let email = $('#Email').val();
+    let dataNascimento = $('#DataNascimento').val();
+    let dataHora = $('#DataHora').val();
+    let consultaId = $('#ConsultaId').val() || 0;
+    //var formData = new FormData();
 
-    formData.append('pacienteNome', $('#NomePaciente').val());
-    formData.append('medicoId', $('#MedicoId').val());
-    formData.append('email', $('#Email').val());
-    formData.append('dataNascimento', $('#DataNascimento').val());
-    formData.append('dataHora', $('#DataHora').val());
-    formData.append('consultaId', $('#ConsultaId').val() || 0);
+    //formData.append('pacienteNome', $('#NomePaciente').val());
+    //formData.append('medicoId', $('#MedicoId').val());
+    //formData.append('email', $('#Email').val());
+    //formData.append('dataNascimento', $('#DataNascimento').val());
+    //formData.append('dataHora', $('#DataHora').val());
+    //formData.append('consultaId', $('#ConsultaId').val() || 0);
 
-    if (formData.get('pacienteNome') && formData.get('medicoId') && formData.get('email') && formData.get('dataHora')) {
+    if (pacienteNome && medicoId && email && dataHora) {
 
         if (confirm('Deseja salvar a consulta?')) {
 
-            let url = formData.get('consultaId') > 0 ? '/Consultas/EditConsulta' : '/Consultas/CreateConsulta';
+            let url = consultaId > 0 ? '/Consultas/EditConsulta' : '/Consultas/CreateConsulta';
+            try {
+                const response = await helper.postFormData(url, { "pacienteNome": pacienteNome, "medicoId": medicoId, "email": email, "dataNascimento": dataNascimento, "dataHora": dataHora, "consultaId": consultaId });
 
-            fetch(url, {
-                method: 'POST',
-                body: formData
-            }).then((res) => res.json())
-                .then((data) => {
-                    if (data.status) {
-                        ListConsulta();
-                        $('#modalCreateConsulta').modal('hide');
-                        alert('Consulta salva com sucesso!');
-                    } else {
-                        alert('Ocorreu um erro: ' + (data.message || 'Erro ao salvar a consulta.'));
-                    }
-                }).catch((err) => console.error(err));
+                if (response.status) {
+                     await ListConsulta();
+                    $('#modalCreateConsulta').modal('hide');
+                    alert('Consulta salva com sucesso!');
+                } else {
+                    alert('Ocorreu um erro: ' + (response.message || 'Erro ao salvar a consulta.'));
+                }
+            } catch (e) {
+                console.log(e);
+            }
+            //fetch(url, {
+            //    method: 'POST',
+            //    body: formData
+            //}).then((res) => res.json())
+            //    .then((data) => {
+            //        if (data.status) {
+            //            ListConsulta();
+            //            $('#modalCreateConsulta').modal('hide');
+            //            alert('Consulta salva com sucesso!');
+            //        } else {
+            //            alert('Ocorreu um erro: ' + (data.message || 'Erro ao salvar a consulta.'));
+            //        }
+            //    }).catch((err) => console.error(err));
 
 
             //        $.ajax({
@@ -173,25 +232,37 @@ function SaveConsulta() {
     }
 }
 
-function DeleteConsulta(consultaId) {
+async function DeleteConsulta(consultaId) {
 
-    formData = new FormData();
-    formData.append('consultaId', consultaId);
+    //formData = new FormData();/
+    //formData.append('consultaId', consultaId);
 
-    if (formData.get('consultaId') && confirm('Deseja realmente excluir esta consulta?')) {
+    if (consultaId && confirm('Deseja realmente excluir esta consulta?')) {
 
-        fetch('/Consultas/DeleteConsulta', {
-            method: 'POST',
-            body: formData
-        }).then((res) => res.json())
-            .then((data) => {
-                if (data.status) {
-                    ListConsulta();
-                    alert('Consulta excluída com sucesso!');
-                } else {
-                    alert('Erro: ' + data.message);
-                }
-            }).catch((err) => console.error(err));
+        try {
+            const response = await helper.postFormData('/Consultas/DeleteConsulta', { "consultaId": consultaId });
+
+            if (response.status) {
+                await ListConsulta();
+                alert('Consulta excluída com sucesso!');
+            } else {
+                alert('Erro: ' + response.message);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+        //fetch('/Consultas/DeleteConsulta', {
+        //    method: 'POST',
+        //    body: formData
+        //}).then((res) => res.json())
+        //    .then((data) => {
+        //        if (data.status) {
+        //            ListConsulta();
+        //            alert('Consulta excluída com sucesso!');
+        //        } else {
+        //            alert('Erro: ' + data.message);
+        //        }
+        //    }).catch((err) => console.error(err));
 
         //$.ajax({
         //    type: "POST",

@@ -7,7 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="bundleconfig.json" />
+    <Content Remove="compilerconfig.json" />
     <Content Remove="Views\Consultas\_Layout.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="bundleconfig.json" />
+    <None Include="compilerconfig.json" />
   </ItemGroup>
 
   <ItemGroup>
